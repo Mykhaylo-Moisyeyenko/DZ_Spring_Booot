@@ -1,8 +1,11 @@
 package de.telran.dzMoisyeyenko210125mbe.pojo;
 
+import org.springframework.stereotype.Component;
+
 import java.security.Timestamp;
 import java.util.Objects;
 
+@Component
 public class Order {
 
     private Long orderId;
@@ -14,7 +17,7 @@ public class Order {
     private Status status;
     private Timestamp updatedAt;
 
-    private Order(){}
+    public Order(){}
 
     public Order(Long orderId, User user, Timestamp createdAt, String deliveryAddress, String contactPhone, String deliveryMethod, Status status, Timestamp updatedAt) {
         this.orderId = orderId;

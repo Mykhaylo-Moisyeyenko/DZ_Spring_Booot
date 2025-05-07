@@ -1,7 +1,10 @@
 package de.telran.dzMoisyeyenko210125mbe.pojo;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Objects;
 
+@Component
 public class OrderItem {
 
     private Long orderItemId;
@@ -10,7 +13,7 @@ public class OrderItem {
     private Integer quantity;
     private Double priceAtPurchase;
 
-    private OrderItem(){}
+    public OrderItem(){}
 
     public OrderItem(Long orderItemId, Order order, Product product, Integer quantity, Double priceAtPurchase) {
         this.orderItemId = orderItemId;

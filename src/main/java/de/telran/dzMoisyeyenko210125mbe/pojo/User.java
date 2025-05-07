@@ -1,7 +1,10 @@
 package de.telran.dzMoisyeyenko210125mbe.pojo;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Objects;
 
+@Component
 public class User {
 
     private Long userId;

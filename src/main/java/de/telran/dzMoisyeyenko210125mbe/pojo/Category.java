@@ -1,26 +1,29 @@
 package de.telran.dzMoisyeyenko210125mbe.pojo;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Objects;
 
+@Component
 public class Category {
 
-    private Long categeryId;
+    private Long categoryId;
 
     private String name;
 
     public Category() {}
 
     public Category(Long categeryId, String name) {
-        this.categeryId = categeryId;
+        this.categoryId = categeryId;
         this.name = name;
     }
 
-    public Long getCategeryId() {
-        return categeryId;
+    public Long getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategeryId(Long categeryId) {
-        this.categeryId = categeryId;
+    public void setCategoryId(Long categeryId) {
+        this.categoryId = categeryId;
     }
 
     public String getName() {
@@ -34,7 +37,7 @@ public class Category {
     @Override
     public String toString() {
         return "Category{" +
-                "categeryId=" + categeryId +
+                "categoryId=" + categoryId +
                 ", name='" + name + '\'' +
                 '}';
     }
@@ -43,11 +46,11 @@ public class Category {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Category that = (Category) o;
-        return Objects.equals(categeryId, that.categeryId) && Objects.equals(name, that.name);
+        return Objects.equals(categoryId, that.categoryId) && Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(categeryId, name);
+        return Objects.hash(categoryId, name);
     }
 }

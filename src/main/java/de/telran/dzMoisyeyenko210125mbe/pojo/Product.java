@@ -1,8 +1,11 @@
 package de.telran.dzMoisyeyenko210125mbe.pojo;
 
+import org.springframework.stereotype.Component;
+
 import java.sql.Timestamp;
 import java.util.Objects;
 
+@Component
 public class Product {
 
     private Long productId;
@@ -23,7 +26,7 @@ public class Product {
 
     private Timestamp updatedAt;
 
-    private Product(){}
+    public Product(){}
 
     public Product(Long productId, String name, String description, Double price, Category category, String imageUrl, Double discountPrice, Timestamp createdAt, Timestamp updatedAt) {
         this.productId = productId;

@@ -1,13 +1,16 @@
 package de.telran.dzMoisyeyenko210125mbe.pojo;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Objects;
 
+@Component
 public class Cart {
 
     private Long cartId;
     private User user;
 
-    private Cart(){}
+    public Cart(){}
 
     public Cart(Long cartId, User user) {
         this.cartId = cartId;
