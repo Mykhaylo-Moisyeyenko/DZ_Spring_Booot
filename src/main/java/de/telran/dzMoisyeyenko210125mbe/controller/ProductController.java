@@ -2,7 +2,6 @@ package de.telran.dzMoisyeyenko210125mbe.controller;
 
 import de.telran.dzMoisyeyenko210125mbe.pojo.Product;
 import de.telran.dzMoisyeyenko210125mbe.service.ProductServiceInterface;
-import de.telran.dzMoisyeyenko210125mbe.service.ProductServiceList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

@@ -1,8 +1,6 @@
 package de.telran.dzMoisyeyenko210125mbe.controller;
 
-import de.telran.dzMoisyeyenko210125mbe.pojo.CartItem;
 import de.telran.dzMoisyeyenko210125mbe.pojo.Category;
-import de.telran.dzMoisyeyenko210125mbe.pojo.User;
 import de.telran.dzMoisyeyenko210125mbe.service.StorageServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
