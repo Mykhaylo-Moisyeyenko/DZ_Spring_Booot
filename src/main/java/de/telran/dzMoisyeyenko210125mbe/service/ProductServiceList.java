@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class ProductServiceList implements ProductServiceInterface {
+public class ProductServiceList implements StorageServiceInterface<Product, Long> {
 
     private List<Product> localStorage = new ArrayList<>();
 
@@ -29,12 +29,12 @@ public class ProductServiceList implements ProductServiceInterface {
     }
 
     @Override
-    public List<Product> getAllProducts() {
+    public List<Product> getAll() {
         return localStorage;
     }
 
     @Override
-    public Product getProductById(Long productId) {
+    public Product getById(Long productId) {
         for (Product product : localStorage) {
             if (product.getProductId().equals(productId))
                 return product;
@@ -43,15 +43,15 @@ public class ProductServiceList implements ProductServiceInterface {
     }
 
     @Override
-    public Product insertProduct(Product newProduct) {
+    public Product create(Product newProduct) {
         if (localStorage.add(newProduct)) {
-            return getProductById(newProduct.getProductId());
+            return getById(newProduct.getProductId());
         }
         return null;
     }
 
     @Override
-    public Product updateProduct(Long id, Product updateProduct) {
+    public Product updateById(Long id, Product updateProduct) {
         for (int i = 0; i < localStorage.size(); i++) {
             Product product = localStorage.get(i);
             if (product.getProductId().equals(id)) {
@@ -61,35 +61,35 @@ public class ProductServiceList implements ProductServiceInterface {
             }
         }
         System.out.println("При обновлении продукта, продукт с Id " + id + " не был обнаружен, поэтому в базу внесен новый продукт с таким Id");
-        return insertProduct(updateProduct);
+        return create(updateProduct);
     }
 
-    @Override
-    public Product updatePartProduct(Long id, Product updateProduct) {
-        for (Product product : localStorage) {
-            if (product.getProductId().equals(id)) {
-                if (!product.getName().equals(updateProduct.getName())) {
-                    product.setName(updateProduct.getName());
-                }
-                if (product.getDescription() == null
-                        || !product.getDescription().equals(updateProduct.getDescription())) {
-                    product.setDescription(updateProduct.getDescription());
-                }
-                if (product.getPrice() == null
-                        || !product.getPrice().equals(updateProduct.getPrice())) {
-                    product.setPrice(updateProduct.getPrice());
-                }
-                System.out.println("Отредактирован продукт с id: " + id);
-                return product;
-            }
-        }
-        System.out.println("Продукт с Id " + id + " не найден");
-        return null;
-    }
+//    @Override
+//    public Product updatePartProduct(Long id, Product updateProduct) {
+//        for (Product product : localStorage) {
+//            if (product.getProductId().equals(id)) {
+//                if (!product.getName().equals(updateProduct.getName())) {
+//                    product.setName(updateProduct.getName());
+//                }
+//                if (product.getDescription() == null
+//                        || !product.getDescription().equals(updateProduct.getDescription())) {
+//                    product.setDescription(updateProduct.getDescription());
+//                }
+//                if (product.getPrice() == null
+//                        || !product.getPrice().equals(updateProduct.getPrice())) {
+//                    product.setPrice(updateProduct.getPrice());
+//                }
+//                System.out.println("Отредактирован продукт с id: " + id);
+//                return product;
+//            }
+//        }
+//        System.out.println("Продукт с Id " + id + " не найден");
+//        return null;
+//    }
 
     @Override
-    public void deleteProductById(Long id) {
-        if (getProductById(id) == null) {
+    public void deleteById(Long id) {
+        if (getById(id) == null) {
             throw new IllegalArgumentException("Продукта с таким Id не существует");
         }
         for (int i = 0; i < localStorage.size(); i++) {//удаление реализовано без итератора
