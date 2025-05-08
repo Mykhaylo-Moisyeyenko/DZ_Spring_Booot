@@ -1,6 +1,5 @@
 package de.telran.dzMoisyeyenko210125mbe.service;
 
-import de.telran.dzMoisyeyenko210125mbe.pojo.Order;
 import de.telran.dzMoisyeyenko210125mbe.pojo.Role;
 import de.telran.dzMoisyeyenko210125mbe.pojo.User;
 import jakarta.annotation.PostConstruct;
@@ -10,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class UserServiceList implements StorageServiceInterface<User>{
+public class UserServiceList implements StorageServiceInterface<User, Long>{
 
     private List<User> userLocalStorage = new ArrayList<>();
 
@@ -23,5 +22,48 @@ public class UserServiceList implements StorageServiceInterface<User>{
     @Override
     public List<User> getAll() {
         return userLocalStorage;
+    }
+
+    @Override
+    public User getById(Long id) {
+        for (User user : userLocalStorage) {
+            if (user.getUserId().equals(id))
+                return user;
+        }
+        return null;
+    }
+
+    @Override
+    public User create(User newUser) {
+        if (userLocalStorage.add(newUser)) {
+            return getById(newUser.getUserId());
+        }
+        return null;
+    }
+
+    @Override
+    public User updateById(Long id, User updateUser) {
+        for (int i = 0; i < userLocalStorage.size(); i++) {
+            User user = userLocalStorage.get(i);
+            if (user.getUserId().equals(id)) {
+                userLocalStorage.set(i, updateUser);
+                System.out.println("Проведено обновление Id: " + id);
+                return userLocalStorage.get(i);
+            }
+        }
+        System.out.println("При обновлении объект с Id " + id + " не был обнаружен, поэтому в базу внесен новый объект с таким Id");
+        return create(updateUser);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        if (getById(id) == null) {
+            throw new IllegalArgumentException("Объекта с таким Id не существует");
+        }
+        for (int i = 0; i < userLocalStorage.size(); i++) {//удаление реализовано без итератора
+            if (userLocalStorage.get(i).getUserId() == id) {
+                userLocalStorage.remove(i);
+            }
+        }
     }
 }

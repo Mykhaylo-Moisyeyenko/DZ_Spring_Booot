@@ -1,9 +1,9 @@
 package de.telran.dzMoisyeyenko210125mbe.controller;
 
-import de.telran.dzMoisyeyenko210125mbe.pojo.Cart;
 import de.telran.dzMoisyeyenko210125mbe.pojo.CartItem;
 import de.telran.dzMoisyeyenko210125mbe.service.StorageServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
 public class CartItemController {
 
     @Autowired
-    private StorageServiceInterface<CartItem> storageServiceInterface;
+    private StorageServiceInterface<CartItem, Long> storageServiceInterface;
 
     @GetMapping
     public List<CartItem> getAll() {
@@ -21,24 +21,31 @@ public class CartItemController {
         return storageServiceInterface.getAll();
     }
 
-    @GetMapping("/{Id}")
-    public void getById(@PathVariable Long Id) {
-        System.out.println("Привет, я GET-запрос контроллера - CartItemController для получения CartItem по Id");
+    @GetMapping("/{id}")
+    public CartItem getById(@PathVariable Long id) {
+        System.out.println("Привет, я GET-запрос контроллера - CartItemController для получения объекта по Id");
+        return storageServiceInterface.getById(id);
     }
 
     @PostMapping
-    public void create(@RequestBody CartItem cartItem){
+    @ResponseStatus(HttpStatus.CREATED)
+    public CartItem create(@RequestBody CartItem cartItem){
         System.out.println("Привет, я POST-запрос контроллера - CartItemController");
         System.out.println("В POST-запросе поступило: " + cartItem);
+        return storageServiceInterface.create(cartItem);
     }
 
-    @PutMapping("/{Id}")
-    public void updateById(@PathVariable Long Id){
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public CartItem updateById(@PathVariable Long id, @RequestBody CartItem updateCartItem){
         System.out.println("Привет, я PUT-запрос контроллера - CartItemController");
+        return storageServiceInterface.updateById(id, updateCartItem);
     }
 
-    @DeleteMapping("/{Id}")
-    public void deleteById(@PathVariable Long Id){
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteById(@PathVariable Long id){
         System.out.println("Привет, я DELETE-запрос контроллера - CartItemController");
+        storageServiceInterface.deleteById(id);
     }
 }

@@ -1,9 +1,11 @@
 package de.telran.dzMoisyeyenko210125mbe.controller;
 
+import de.telran.dzMoisyeyenko210125mbe.pojo.CartItem;
 import de.telran.dzMoisyeyenko210125mbe.pojo.OrderItem;
 import de.telran.dzMoisyeyenko210125mbe.pojo.User;
 import de.telran.dzMoisyeyenko210125mbe.service.StorageServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,7 +15,7 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private StorageServiceInterface<User> storageServiceInterface;
+    private StorageServiceInterface<User, Long> storageServiceInterface;
 
     @GetMapping
     public List<User> getAll(){
@@ -21,24 +23,31 @@ public class UserController {
         return storageServiceInterface.getAll();
     }
 
-    @GetMapping("/{Id}")
-    public void getById(@PathVariable Long Id) {
-        System.out.println("Привет, я GET-запрос контроллера - UserController для получения User по Id");
+    @GetMapping("/{id}")
+    public User getById(@PathVariable Long id) {
+        System.out.println("Привет, я GET-запрос контроллера - UserController для получения объекта по Id");
+        return storageServiceInterface.getById(id);
     }
 
     @PostMapping
-    public void create(@RequestBody User user){
+    @ResponseStatus(HttpStatus.CREATED)
+    public User create(@RequestBody User user){
         System.out.println("Привет, я POST-запрос контроллера - UserController");
         System.out.println("В POST-запросе поступило: " + user);
+        return storageServiceInterface.create(user);
     }
 
-    @PutMapping("/{Id}")
-    public void updateById(@PathVariable Long Id){
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public User updateById(@PathVariable Long id, @RequestBody User updateUser){
         System.out.println("Привет, я PUT-запрос контроллера - UserController");
+        return storageServiceInterface.updateById(id, updateUser);
     }
 
-    @DeleteMapping("/{Id}")
-    public void deleteById(@PathVariable Long Id){
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteById(@PathVariable Long id){
         System.out.println("Привет, я DELETE-запрос контроллера - UserController");
+        storageServiceInterface.deleteById(id);
     }
 }

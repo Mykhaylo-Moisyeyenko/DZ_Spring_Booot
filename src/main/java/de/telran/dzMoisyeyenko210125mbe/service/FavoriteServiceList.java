@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class FavoriteServiceList implements StorageServiceInterface<Favorite>{
+public class FavoriteServiceList implements StorageServiceInterface<Favorite, Long>{
 
     private List<Favorite> favoriteLocalStorage = new ArrayList<>();
 
@@ -32,5 +32,48 @@ public class FavoriteServiceList implements StorageServiceInterface<Favorite>{
     @Override
     public List<Favorite> getAll() {
         return favoriteLocalStorage;
+    }
+
+    @Override
+    public Favorite getById(Long id) {
+        for (Favorite favorite : favoriteLocalStorage) {
+            if (favorite.getFavoriteId().equals(id))
+                return favorite;
+        }
+        return null;
+    }
+
+    @Override
+    public Favorite create(Favorite newFavorite) {
+        if (favoriteLocalStorage.add(newFavorite)) {
+            return getById(newFavorite.getFavoriteId());
+        }
+        return null;
+    }
+
+    @Override
+    public Favorite updateById(Long id, Favorite updateFavorite) {
+        for (int i = 0; i < favoriteLocalStorage.size(); i++) {
+            Favorite favorite = favoriteLocalStorage.get(i);
+            if (favorite.getFavoriteId().equals(id)) {
+                favoriteLocalStorage.set(i, updateFavorite);
+                System.out.println("Проведено обновление Id: " + id);
+                return favoriteLocalStorage.get(i);
+            }
+        }
+        System.out.println("При обновлении объект с Id " + id + " не был обнаружен, поэтому в базу внесен новый объект с таким Id");
+        return create(updateFavorite);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        if (getById(id) == null) {
+            throw new IllegalArgumentException("Объекта с таким Id не существует");
+        }
+        for (int i = 0; i < favoriteLocalStorage.size(); i++) {//удаление реализовано без итератора
+            if (favoriteLocalStorage.get(i).getFavoriteId() == id) {
+                favoriteLocalStorage.remove(i);
+            }
+        }
     }
 }

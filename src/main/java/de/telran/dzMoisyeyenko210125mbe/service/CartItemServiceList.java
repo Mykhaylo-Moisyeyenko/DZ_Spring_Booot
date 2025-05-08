@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class CartItemServiceList implements StorageServiceInterface<CartItem>{
+public class CartItemServiceList implements StorageServiceInterface<CartItem, Long>{
 
     private final List<CartItem> cartItemLocalStorage = new ArrayList<>();
 
@@ -27,5 +27,48 @@ public class CartItemServiceList implements StorageServiceInterface<CartItem>{
     @Override
     public List<CartItem> getAll() {
         return cartItemLocalStorage;
+    }
+
+    @Override
+    public CartItem getById(Long id) {
+        for (CartItem cartItem : cartItemLocalStorage) {
+            if (cartItem.getCartItemId().equals(id))
+                return cartItem;
+        }
+        return null;
+    }
+
+    @Override
+    public CartItem create(CartItem newCartItem) {
+        if (cartItemLocalStorage.add(newCartItem)) {
+            return getById(newCartItem.getCartItemId());
+        }
+        return null;
+    }
+
+    @Override
+    public CartItem updateById(Long id, CartItem updateCartItem) {
+        for (int i = 0; i < cartItemLocalStorage.size(); i++) {
+            CartItem cartItem = cartItemLocalStorage.get(i);
+            if (cartItem.getCartItemId().equals(id)) {
+                cartItemLocalStorage.set(i, updateCartItem);
+                System.out.println("Проведено обновление Id: " + id);
+                return cartItemLocalStorage.get(i);
+            }
+        }
+        System.out.println("При обновлении объект с Id " + id + " не был обнаружен, поэтому в базу внесен новый объект с таким Id");
+        return create(updateCartItem);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        if (getById(id) == null) {
+            throw new IllegalArgumentException("Объекта с таким Id не существует");
+        }
+        for (int i = 0; i < cartItemLocalStorage.size(); i++) {//удаление реализовано без итератора
+            if (cartItemLocalStorage.get(i).getCartItemId() == id) {
+                cartItemLocalStorage.remove(i);
+            }
+        }
     }
 }

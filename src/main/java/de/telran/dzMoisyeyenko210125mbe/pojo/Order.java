@@ -2,7 +2,7 @@ package de.telran.dzMoisyeyenko210125mbe.pojo;
 
 import org.springframework.stereotype.Component;
 
-import java.security.Timestamp;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 @Component

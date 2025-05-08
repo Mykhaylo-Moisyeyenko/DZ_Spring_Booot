@@ -1,9 +1,9 @@
 package de.telran.dzMoisyeyenko210125mbe.controller;
 
-import de.telran.dzMoisyeyenko210125mbe.pojo.Category;
 import de.telran.dzMoisyeyenko210125mbe.pojo.Favorite;
 import de.telran.dzMoisyeyenko210125mbe.service.StorageServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,32 +13,39 @@ import java.util.List;
 public class FavoriteController {
 
     @Autowired
-    private StorageServiceInterface<Favorite> storageServiceInterface;
+    private StorageServiceInterface<Favorite, Long> storageServiceInterface;
 
     @GetMapping
     public List<Favorite> getAll(){
-        System.out.println("Привет, я GET-запрос контроллера - FavoriteController для получения всех Category");
+        System.out.println("Привет, я GET-запрос контроллера - FavoriteController для получения всех объектов");
         return storageServiceInterface.getAll();
     }
 
-    @GetMapping("/{Id}")
-    public void getById(@PathVariable Long Id) {
-        System.out.println("Привет, я GET-запрос контроллера - FavoriteController");
+    @GetMapping("/{id}")
+    public Favorite getById(@PathVariable Long id) {
+        System.out.println("Привет, я GET-запрос контроллера - FavoriteController для получения объекта по Id");
+        return storageServiceInterface.getById(id);
     }
 
     @PostMapping
-    public void create(@RequestBody Favorite favorite){
+    @ResponseStatus(HttpStatus.CREATED)
+    public Favorite create(@RequestBody Favorite favorite){
         System.out.println("Привет, я POST-запрос контроллера - FavoriteController");
         System.out.println("В POST-запросе поступило: " + favorite);
+        return storageServiceInterface.create(favorite);
     }
 
-    @PutMapping("/{Id}")
-    public void updateById(@PathVariable Long Id){
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public Favorite updateById(@PathVariable Long id, @RequestBody Favorite updateFavorite){
         System.out.println("Привет, я PUT-запрос контроллера - FavoriteController");
+        return storageServiceInterface.updateById(id, updateFavorite);
     }
 
-    @DeleteMapping("/{Id}")
-    public void deleteById(@PathVariable Long Id){
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteById(@PathVariable Long id){
         System.out.println("Привет, я DELETE-запрос контроллера - FavoriteController");
+        storageServiceInterface.deleteById(id);
     }
 }
