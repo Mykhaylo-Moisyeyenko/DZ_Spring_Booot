@@ -1,5 +1,6 @@
 package de.telran.dzMoisyeyenko210125mbe.controller;
 
+import de.telran.dzMoisyeyenko210125mbe.exception.BadRequestException;
 import de.telran.dzMoisyeyenko210125mbe.pojo.Order;
 import de.telran.dzMoisyeyenko210125mbe.service.StorageServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,21 +28,17 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable Long id) {
-        Order gettedOrder = null;
-        try {
-            gettedOrder = storageServiceInterface.getById(id);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public ResponseEntity<Order> getById(@PathVariable Long id) throws Exception {
+        Order gettedOrder = storageServiceInterface.getById(id);
         System.out.println("Привет, я GET-запрос контроллера - OrderController для получения объекта по Id");
         if (gettedOrder==null){
+//            Варианты создания ResponseEntity:
 //            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 //            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             return new ResponseEntity<>(HttpStatus.valueOf(404));
         } else {
 //            return ResponseEntity.ok(gettedOrder);
-            return ResponseEntity.status(HttpStatusCode.valueOf(200)).build();
+            return new ResponseEntity<>(gettedOrder, HttpStatusCode.valueOf(200));
         }
     }
 
@@ -75,5 +72,18 @@ public class OrderController {
         System.out.println("Привет, я DELETE-запрос контроллера - OrderController");
         storageServiceInterface.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(BadRequestException.class)//обработчик для пользовательского исключения BadRequestException
+    public ResponseEntity<String> handleBadRequestException(BadRequestException exception) {
+        return ResponseEntity.status(HttpStatus.valueOf(404))
+                .body("Controller: " + exception.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
+    @ExceptionHandler(Exception.class) // обработчик для всех остальных типов исключений
+    public String handleException(Exception exception) {
+        return  "Controller(Exception): Извините, произошла ошибка, попробуйте позже выполнить операцию. "
+                +exception.getMessage();
     }
 }

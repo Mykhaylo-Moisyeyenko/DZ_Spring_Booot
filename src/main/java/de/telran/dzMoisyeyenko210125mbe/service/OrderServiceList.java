@@ -1,5 +1,6 @@
 package de.telran.dzMoisyeyenko210125mbe.service;
 
+import de.telran.dzMoisyeyenko210125mbe.exception.BadRequestException;
 import de.telran.dzMoisyeyenko210125mbe.pojo.*;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
@@ -35,7 +36,7 @@ public class OrderServiceList implements StorageServiceInterface<Order, Long> {
             if (order.getOrderId().equals(id))
                 return order;
         }
-        return null;
+        throw new BadRequestException("Объект c Id= " + id + " не найден!!!");
     }
 
     @Override
@@ -64,21 +65,6 @@ public class OrderServiceList implements StorageServiceInterface<Order, Long> {
         return create(updateOrder);
     }
 
-    @Override
-    public void deleteById(Long id) {
-        try {
-            if (getById(id) == null) {
-                throw new IllegalArgumentException("Объекта с таким Id не существует");
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        for (int i = 0; i < orderLocalStorage.size(); i++) {//удаление реализовано без итератора
-            if (orderLocalStorage.get(i).getOrderId() == id) {
-                orderLocalStorage.remove(i);
-            }
-        }
-    }
 
     @Override //обновляю только поле ContactPhone
     public Order updatePart(Long id, Order updatePart) throws Exception {
@@ -89,6 +75,18 @@ public class OrderServiceList implements StorageServiceInterface<Order, Long> {
                 return updatedPart;
             }
         }
-        throw new NoSuchElementException("При update не нашли объект с id = "+id);
+        throw new BadRequestException("Объект c Id= " + id + " не найден!!!");
+    }
+
+    @Override
+    public void deleteById(Long id) throws Exception {
+        if (getById(id) == null) {
+            throw new BadRequestException("Объект c Id= " + id + " не найден!!!");
+        }
+        for (int i = 0; i < orderLocalStorage.size(); i++) {//удаление реализовано без итератора
+            if (orderLocalStorage.get(i).getOrderId() == id) {
+                orderLocalStorage.remove(i);
+            }
+        }
     }
 }
