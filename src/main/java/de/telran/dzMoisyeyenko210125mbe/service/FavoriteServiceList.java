@@ -1,14 +1,12 @@
 package de.telran.dzMoisyeyenko210125mbe.service;
 
-import de.telran.dzMoisyeyenko210125mbe.pojo.Favorite;
-import de.telran.dzMoisyeyenko210125mbe.pojo.Product;
-import de.telran.dzMoisyeyenko210125mbe.pojo.Role;
-import de.telran.dzMoisyeyenko210125mbe.pojo.User;
+import de.telran.dzMoisyeyenko210125mbe.pojo.*;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Component
 public class FavoriteServiceList implements StorageServiceInterface<Favorite, Long>{
@@ -35,7 +33,7 @@ public class FavoriteServiceList implements StorageServiceInterface<Favorite, Lo
     }
 
     @Override
-    public Favorite getById(Long id) {
+    public Favorite getById(Long id) throws Exception {
         for (Favorite favorite : favoriteLocalStorage) {
             if (favorite.getFavoriteId().equals(id))
                 return favorite;
@@ -46,7 +44,11 @@ public class FavoriteServiceList implements StorageServiceInterface<Favorite, Lo
     @Override
     public Favorite create(Favorite newFavorite) {
         if (favoriteLocalStorage.add(newFavorite)) {
-            return getById(newFavorite.getFavoriteId());
+            try {
+                return getById(newFavorite.getFavoriteId());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         return null;
     }
@@ -65,10 +67,26 @@ public class FavoriteServiceList implements StorageServiceInterface<Favorite, Lo
         return create(updateFavorite);
     }
 
+    @Override //обновляю только поле Product
+    public Favorite updatePart(Long id, Favorite updatePart) throws Exception {
+        for (Favorite updatedPart : favoriteLocalStorage) {
+            if(updatedPart.getFavoriteId().equals(id)) {
+                if (!updatedPart.getProduct().equals(updatePart.getProduct()))
+                    updatedPart.setProduct(updatePart.getProduct());
+                return updatedPart;
+            }
+        }
+        throw new NoSuchElementException("При update не нашли объект с id = "+id);
+    }
+
     @Override
     public void deleteById(Long id) {
-        if (getById(id) == null) {
-            throw new IllegalArgumentException("Объекта с таким Id не существует");
+        try {
+            if (getById(id) == null) {
+                throw new IllegalArgumentException("Объекта с таким Id не существует");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         for (int i = 0; i < favoriteLocalStorage.size(); i++) {//удаление реализовано без итератора
             if (favoriteLocalStorage.get(i).getFavoriteId() == id) {

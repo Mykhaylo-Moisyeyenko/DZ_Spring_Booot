@@ -4,6 +4,7 @@ import de.telran.dzMoisyeyenko210125mbe.pojo.Cart;
 import de.telran.dzMoisyeyenko210125mbe.service.StorageServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,7 +25,11 @@ public class CartController {
     @GetMapping("/{id}")
     public Cart getById(@PathVariable Long id) {
         System.out.println("Привет, я GET-запрос контроллера - CartController для получения объекта по Id");
-        return storageServiceInterface.getById(id);
+        try {
+            return storageServiceInterface.getById(id);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @PostMapping
@@ -42,9 +47,18 @@ public class CartController {
         return storageServiceInterface.updateById(id, updateCart);
     }
 
+    // обновление части информации, если объекта не существует, новый не создаем
+    @PatchMapping("/{id}")
+    public ResponseEntity<Cart> updatePart(@PathVariable Long id, @RequestBody Cart updatePart) throws Exception{
+        System.out.println("Привет, я PATCH-запрос контроллера - CartController");
+        System.out.println("Произошло редактирование части информации объекта");
+        Cart updatedPart = storageServiceInterface.updatePart(id, updatePart);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(updatedPart);
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteById(@PathVariable Long id){
+    public void deleteById(@PathVariable Long id) throws Exception {
         System.out.println("Привет, я DELETE-запрос контроллера - CartController");
         storageServiceInterface.deleteById(id);
     }

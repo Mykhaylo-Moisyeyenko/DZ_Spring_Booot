@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Component
 public class OrderServiceList implements StorageServiceInterface<Order, Long> {
@@ -29,7 +30,7 @@ public class OrderServiceList implements StorageServiceInterface<Order, Long> {
     }
 
     @Override
-    public Order getById(Long id) {
+    public Order getById(Long id) throws Exception {
         for (Order order : orderLocalStorage) {
             if (order.getOrderId().equals(id))
                 return order;
@@ -40,7 +41,11 @@ public class OrderServiceList implements StorageServiceInterface<Order, Long> {
     @Override
     public Order create(Order newOrder) {
         if (orderLocalStorage.add(newOrder)) {
-            return getById(newOrder.getOrderId());
+            try {
+                return getById(newOrder.getOrderId());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         return null;
     }
@@ -61,13 +66,29 @@ public class OrderServiceList implements StorageServiceInterface<Order, Long> {
 
     @Override
     public void deleteById(Long id) {
-        if (getById(id) == null) {
-            throw new IllegalArgumentException("Объекта с таким Id не существует");
+        try {
+            if (getById(id) == null) {
+                throw new IllegalArgumentException("Объекта с таким Id не существует");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         for (int i = 0; i < orderLocalStorage.size(); i++) {//удаление реализовано без итератора
             if (orderLocalStorage.get(i).getOrderId() == id) {
                 orderLocalStorage.remove(i);
             }
         }
+    }
+
+    @Override //обновляю только поле ContactPhone
+    public Order updatePart(Long id, Order updatePart) throws Exception {
+        for (Order updatedPart : orderLocalStorage) {
+            if(updatedPart.getOrderId().equals(id)) {
+                if (!updatedPart.getContactPhone().equals(updatePart.getContactPhone()))
+                    updatedPart.setContactPhone(updatePart.getContactPhone());
+                return updatedPart;
+            }
+        }
+        throw new NoSuchElementException("При update не нашли объект с id = "+id);
     }
 }

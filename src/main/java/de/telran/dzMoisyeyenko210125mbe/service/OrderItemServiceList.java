@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Component
 public class OrderItemServiceList implements StorageServiceInterface<OrderItem, Long> {
@@ -37,7 +38,7 @@ public class OrderItemServiceList implements StorageServiceInterface<OrderItem, 
     }
 
     @Override
-    public OrderItem getById(Long id) {
+    public OrderItem getById(Long id) throws Exception {
         for (OrderItem orderItem : orderItemLocalStorage) {
             if (orderItem.getOrderItemId().equals(id))
                 return orderItem;
@@ -48,7 +49,11 @@ public class OrderItemServiceList implements StorageServiceInterface<OrderItem, 
     @Override
     public OrderItem create(OrderItem newOrderItem) {
         if (orderItemLocalStorage.add(newOrderItem)) {
-            return getById(newOrderItem.getOrderItemId());
+            try {
+                return getById(newOrderItem.getOrderItemId());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         return null;
     }
@@ -67,10 +72,26 @@ public class OrderItemServiceList implements StorageServiceInterface<OrderItem, 
         return create(updateOrderItem);
     }
 
+    @Override //обновляю только поле Product
+    public OrderItem updatePart(Long id, OrderItem updatePart) throws Exception {
+        for (OrderItem updatedPart : orderItemLocalStorage) {
+            if(updatedPart.getOrderItemId().equals(id)) {
+                if (!updatedPart.getProduct().equals(updatePart.getProduct()))
+                    updatedPart.setProduct(updatePart.getProduct());
+                return updatedPart;
+            }
+        }
+        throw new NoSuchElementException("При update не нашли объект с id = "+id);
+    }
+
     @Override
     public void deleteById(Long id) {
-        if (getById(id) == null) {
-            throw new IllegalArgumentException("Объекта с таким Id не существует");
+        try {
+            if (getById(id) == null) {
+                throw new IllegalArgumentException("Объекта с таким Id не существует");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         for (int i = 0; i < orderItemLocalStorage.size(); i++) {//удаление реализовано без итератора
             if (orderItemLocalStorage.get(i).getOrderItemId() == id) {

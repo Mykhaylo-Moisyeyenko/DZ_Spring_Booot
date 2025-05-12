@@ -1,5 +1,6 @@
 package de.telran.dzMoisyeyenko210125mbe.service;
 
+import de.telran.dzMoisyeyenko210125mbe.exception.BadRequestException;
 import de.telran.dzMoisyeyenko210125mbe.pojo.Product;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
@@ -34,18 +35,22 @@ public class ProductServiceList implements StorageServiceInterface<Product, Long
     }
 
     @Override
-    public Product getById(Long productId) {
+    public Product getById(Long id) throws Exception {
         for (Product product : localStorage) {
-            if (product.getProductId().equals(productId))
+            if (product.getProductId().equals(id))
                 return product;
         }
-        return null;
+        throw new BadRequestException("Объект c Id= " + id + " не найден!!!");
     }
 
     @Override
     public Product create(Product newProduct) {
         if (localStorage.add(newProduct)) {
-            return getById(newProduct.getProductId());
+            try {
+                return getById(newProduct.getProductId());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         return null;
     }
@@ -64,33 +69,22 @@ public class ProductServiceList implements StorageServiceInterface<Product, Long
         return create(updateProduct);
     }
 
-//    @Override
-//    public Product updatePartProduct(Long id, Product updateProduct) {
-//        for (Product product : localStorage) {
-//            if (product.getProductId().equals(id)) {
-//                if (!product.getName().equals(updateProduct.getName())) {
-//                    product.setName(updateProduct.getName());
-//                }
-//                if (product.getDescription() == null
-//                        || !product.getDescription().equals(updateProduct.getDescription())) {
-//                    product.setDescription(updateProduct.getDescription());
-//                }
-//                if (product.getPrice() == null
-//                        || !product.getPrice().equals(updateProduct.getPrice())) {
-//                    product.setPrice(updateProduct.getPrice());
-//                }
-//                System.out.println("Отредактирован продукт с id: " + id);
-//                return product;
-//            }
-//        }
-//        System.out.println("Продукт с Id " + id + " не найден");
-//        return null;
-//    }
+    @Override //обновляю только поле Name
+    public Product updatePart(Long id, Product updatePart) throws Exception {
+        for (Product updatedPart : localStorage) {
+            if(updatedPart.getProductId().equals(id)) {
+                if (!updatedPart.getName().equals(updatePart.getName()))
+                    updatedPart.setName(updatePart.getName());
+                return updatedPart;
+            }
+        }
+        throw new BadRequestException("Объект c Id= " + id + " не найден!!!");
+    }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(Long id) throws Exception {
         if (getById(id) == null) {
-            throw new IllegalArgumentException("Продукта с таким Id не существует");
+            throw new BadRequestException("Объект c Id= " + id + " не найден!!!");
         }
         for (int i = 0; i < localStorage.size(); i++) {//удаление реализовано без итератора
             if (localStorage.get(i).getProductId() == id) {

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Component
 public class CartServiceList implements StorageServiceInterface<Cart, Long> {
@@ -28,7 +29,7 @@ public class CartServiceList implements StorageServiceInterface<Cart, Long> {
     }
 
     @Override
-    public Cart getById(Long id) {
+    public Cart getById(Long id) throws Exception {
         for (Cart cart : cartLocalStorage) {
             if (cart.getCartId().equals(id))
                 return cart;
@@ -39,7 +40,11 @@ public class CartServiceList implements StorageServiceInterface<Cart, Long> {
     @Override
     public Cart create(Cart newCart) {
         if (cartLocalStorage.add(newCart)) {
-            return getById(newCart.getCartId());
+            try {
+                return getById(newCart.getCartId());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         return null;
     }
@@ -60,13 +65,29 @@ public class CartServiceList implements StorageServiceInterface<Cart, Long> {
 
     @Override
     public void deleteById(Long id) {
-        if (getById(id) == null) {
-            throw new IllegalArgumentException("Объекта с таким Id не существует");
+        try {
+            if (getById(id) == null) {
+                throw new IllegalArgumentException("Объекта с таким Id не существует");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         for (int i = 0; i < cartLocalStorage.size(); i++) {//удаление реализовано без итератора
             if (cartLocalStorage.get(i).getCartId() == id) {
                 cartLocalStorage.remove(i);
             }
         }
+    }
+
+    @Override //обновляю только поле User
+    public Cart updatePart(Long id, Cart updatePart) throws Exception {
+        for (Cart updatedPart : cartLocalStorage) {
+            if(updatedPart.getCartId().equals(id)) {
+                if (!updatedPart.getUser().equals(updatePart.getUser()))
+                    updatedPart.setUser(updatePart.getUser());
+                return updatedPart;
+            }
+        }
+        throw new NoSuchElementException("При update не нашли объект с id = "+id);
     }
 }

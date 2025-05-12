@@ -6,11 +6,13 @@ public interface StorageServiceInterface<T, ID> {
 
     List<T> getAll();
 
-    T getById(ID id);
+    T getById(ID id) throws Exception;
 
     T create(T entity);
 
     T updateById(ID id, T entity);
 
-    void deleteById (ID id);
+    void deleteById (ID id) throws Exception;
+
+    T updatePart(ID id, T entity) throws Exception;
 }

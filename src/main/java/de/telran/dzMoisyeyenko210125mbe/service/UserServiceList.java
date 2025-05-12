@@ -3,6 +3,7 @@ package de.telran.dzMoisyeyenko210125mbe.service;
 import de.telran.dzMoisyeyenko210125mbe.pojo.Role;
 import de.telran.dzMoisyeyenko210125mbe.pojo.User;
 import jakarta.annotation.PostConstruct;
+import de.telran.dzMoisyeyenko210125mbe.exception.BadRequestException;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -25,18 +26,22 @@ public class UserServiceList implements StorageServiceInterface<User, Long>{
     }
 
     @Override
-    public User getById(Long id) {
+    public User getById(Long id) throws Exception {
         for (User user : userLocalStorage) {
             if (user.getUserId().equals(id))
                 return user;
         }
-        return null;
+        throw new BadRequestException("Объект c Id= " + id + " не найден!!!");
     }
 
     @Override
     public User create(User newUser) {
         if (userLocalStorage.add(newUser)) {
-            return getById(newUser.getUserId());
+            try {
+                return getById(newUser.getUserId());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         return null;
     }
@@ -55,10 +60,22 @@ public class UserServiceList implements StorageServiceInterface<User, Long>{
         return create(updateUser);
     }
 
+    @Override //обновляю только поле Name
+    public User updatePart(Long id, User updatePart) throws Exception {
+        for (User updatedPart : userLocalStorage) {
+            if(updatedPart.getUserId().equals(id)) {
+                if (!updatedPart.getName().equals(updatePart.getName()))
+                    updatedPart.setName(updatePart.getName());
+                return updatedPart;
+            }
+        }
+        throw new BadRequestException("Объект c Id= " + id + " не найден!!!");
+    }
+
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(Long id) throws Exception{
         if (getById(id) == null) {
-            throw new IllegalArgumentException("Объекта с таким Id не существует");
+            throw new BadRequestException("Объект c Id= " + id + " не найден!!!");
         }
         for (int i = 0; i < userLocalStorage.size(); i++) {//удаление реализовано без итератора
             if (userLocalStorage.get(i).getUserId() == id) {

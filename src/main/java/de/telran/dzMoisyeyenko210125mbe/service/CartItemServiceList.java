@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Component
 public class CartItemServiceList implements StorageServiceInterface<CartItem, Long>{
@@ -30,7 +31,7 @@ public class CartItemServiceList implements StorageServiceInterface<CartItem, Lo
     }
 
     @Override
-    public CartItem getById(Long id) {
+    public CartItem getById(Long id) throws Exception {
         for (CartItem cartItem : cartItemLocalStorage) {
             if (cartItem.getCartItemId().equals(id))
                 return cartItem;
@@ -41,7 +42,11 @@ public class CartItemServiceList implements StorageServiceInterface<CartItem, Lo
     @Override
     public CartItem create(CartItem newCartItem) {
         if (cartItemLocalStorage.add(newCartItem)) {
-            return getById(newCartItem.getCartItemId());
+            try {
+                return getById(newCartItem.getCartItemId());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         return null;
     }
@@ -62,13 +67,29 @@ public class CartItemServiceList implements StorageServiceInterface<CartItem, Lo
 
     @Override
     public void deleteById(Long id) {
-        if (getById(id) == null) {
-            throw new IllegalArgumentException("Объекта с таким Id не существует");
+        try {
+            if (getById(id) == null) {
+                throw new IllegalArgumentException("Объекта с таким Id не существует");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         for (int i = 0; i < cartItemLocalStorage.size(); i++) {//удаление реализовано без итератора
             if (cartItemLocalStorage.get(i).getCartItemId() == id) {
                 cartItemLocalStorage.remove(i);
             }
         }
+    }
+
+    @Override //обновляю только поле Product
+    public CartItem updatePart(Long id, CartItem updatePart) throws Exception {
+        for (CartItem updatedPart : cartItemLocalStorage) {
+            if(updatedPart.getCartItemId().equals(id)) {
+                if (!updatedPart.getProduct().equals(updatePart.getProduct()))
+                    updatedPart.setProduct(updatePart.getProduct());
+                return updatedPart;
+            }
+        }
+        throw new NoSuchElementException("При update не нашли объект с id = "+id);
     }
 }
