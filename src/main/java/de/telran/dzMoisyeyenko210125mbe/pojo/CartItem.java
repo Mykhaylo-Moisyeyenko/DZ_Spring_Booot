@@ -55,7 +55,7 @@ public class CartItem {
 
     @Override
     public String toString() {
-        return "CartItem{" +
+        return "CartItemEntity{" +
                 "cartItemId=" + cartItemId +
                 ", cart=" + cart +
                 ", product=" + product +

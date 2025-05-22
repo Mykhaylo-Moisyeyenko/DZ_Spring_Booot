@@ -18,7 +18,7 @@ public class CartItemController {
 
     @GetMapping
     public List<CartItem> getAll() {
-        System.out.println("Привет, я GET-запрос контроллера - CartItemController для получения всех CartItem");
+        System.out.println("Привет, я GET-запрос контроллера - CartItemController для получения всех CartItemEntity");
         return storageServiceInterface.getAll();
     }
 
