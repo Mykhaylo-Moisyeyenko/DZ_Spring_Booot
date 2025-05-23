@@ -1,21 +1,30 @@
 package de.telran.dzMoisyeyenko210125mbe.service;
 
 import de.telran.dzMoisyeyenko210125mbe.exception.BadRequestException;
+import de.telran.dzMoisyeyenko210125mbe.model.dto.CategoryDto;
+import de.telran.dzMoisyeyenko210125mbe.model.entity.CategoryEntity;
 import de.telran.dzMoisyeyenko210125mbe.pojo.Category;
+import de.telran.dzMoisyeyenko210125mbe.repository.CategoryRepository;
 import jakarta.annotation.PostConstruct;
-import org.springframework.stereotype.Component;
+import lombok.Builder;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-@Component
+@Service
+@RequiredArgsConstructor
 public class CategoryServiceList implements StorageServiceInterface<Category, Long>{
+
+    private final CategoryRepository categoryRepository;
 
     private List<Category> categoryLocalStorage = new ArrayList<>();
 
     @PostConstruct
     void init(){
+        //Ниже - инициализация продуктов для старых ДЗ:
         Category category1 = new Category(1L, "Фрукты");
         Category category2 = new Category(2L, "Овощи");
 

@@ -1,97 +1,100 @@
 package de.telran.dzMoisyeyenko210125mbe.service;
 
-import de.telran.dzMoisyeyenko210125mbe.pojo.*;
-import jakarta.annotation.PostConstruct;
-import org.springframework.stereotype.Component;
+import de.telran.dzMoisyeyenko210125mbe.exception.BadRequestException;
+import de.telran.dzMoisyeyenko210125mbe.model.dto.FavoriteDto;
+import de.telran.dzMoisyeyenko210125mbe.model.entity.FavoriteEntity;
+import de.telran.dzMoisyeyenko210125mbe.model.entity.ProductEntity;
+import de.telran.dzMoisyeyenko210125mbe.model.entity.UserEntity;
+import de.telran.dzMoisyeyenko210125mbe.repository.FavoriteRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 
-@Component
-public class FavoriteServiceList implements StorageServiceInterface<Favorite, Long>{
+@Service
+@RequiredArgsConstructor
+public class FavoriteServiceList implements StorageServiceInterface<FavoriteDto, Long> {
 
-    private List<Favorite> favoriteLocalStorage = new ArrayList<>();
+    private final FavoriteRepository favoriteRepository;
 
-    @PostConstruct
-    void init(){
-        Product product1 = new Product();
-        product1.setProductId(2L);
-        product1.setName("Огурец");
-        product1.setPrice(1.4);
-
-        User user3 = new User(1L, "Pasha", "1234@gmail.com", "3-44-22", "sdfs", Role.CLIENT);
-
-        Favorite favorite1 = new Favorite(1L, user3, product1);
-
-        favoriteLocalStorage.add(favorite1);
-    }
+    //инициализация бина Favorite значениями - вынесена в класс DataInitializer
 
     @Override
-    public List<Favorite> getAll() {
-        return favoriteLocalStorage;
-    }
-
-    @Override
-    public Favorite getById(Long id) throws Exception {
-        for (Favorite favorite : favoriteLocalStorage) {
-            if (favorite.getFavoriteId().equals(id))
-                return favorite;
+    public List<FavoriteDto> getAll() {
+        List<FavoriteEntity> favoriteEntities = favoriteRepository.findAll();
+        List<FavoriteDto> favoriteDtos = new ArrayList<>();
+        for (FavoriteEntity favorite : favoriteEntities) {
+            FavoriteDto favoriteDto = FavoriteDto.builder()
+                    .favoriteId(favorite.getFavoriteId())
+                    .userId(favorite.getUser().getUserId())
+                    .productId(favorite.getProduct().getProductId())
+                    .build();
+            favoriteDtos.add(favoriteDto);
         }
+        return favoriteDtos;
+    }
+
+    @Override
+    public FavoriteDto getById(Long id) throws Exception {
+        Optional<FavoriteEntity> returnFavoriteOptional = favoriteRepository.findById(id);
+        FavoriteEntity returnFavoriteEntity = returnFavoriteOptional.orElse(new FavoriteEntity());
+
+        FavoriteDto returnFavoriteDto = FavoriteDto.builder()
+                .favoriteId(returnFavoriteEntity.getFavoriteId())
+                .userId(returnFavoriteEntity.getUser().getUserId())
+                .productId(returnFavoriteEntity.getProduct().getProductId())
+                .build();
+        return returnFavoriteDto;
+    }
+
+    @Override
+    public FavoriteDto create(FavoriteDto newFavoriteDto) {
+        if (newFavoriteDto.getFavoriteId()!= null)
+            throw new IllegalArgumentException("Присвоение Id на данном этапе недопустимо");
+
+        UserEntity userStub = UserEntity.builder()//создаю заглушку для юзера
+                .userId(newFavoriteDto.getUserId())
+                .build();
+
+        ProductEntity productStub = ProductEntity.builder()//создаю заглушку для продукта
+                .productId(newFavoriteDto.getProductId())
+                .build();
+
+        FavoriteEntity favoriteEntity = FavoriteEntity.builder()
+                .user(userStub)//вставляю заглушку
+                .product(productStub)//вставляю заглушку
+                .build();
+        favoriteEntity = favoriteRepository.save(favoriteEntity);
+
+        FavoriteDto resultFavoriteDto = FavoriteDto.builder()
+                .favoriteId(favoriteEntity.getFavoriteId())
+                .userId(favoriteEntity.getUser().getUserId())
+                .productId(favoriteEntity.getProduct().getProductId())
+                .build();
+
+        return resultFavoriteDto;
+    }
+
+    @Override
+    public void deleteById(Long id) throws Exception {
+        if (getById(id) == null) {
+            throw new BadRequestException("Объект c Id= " + id + " не найден!!!");
+        }
+        favoriteRepository.deleteById(id);
+    }
+
+
+    //Прочие методы пока реализованы как заглушки:
+
+    @Override
+    public FavoriteDto updateById(Long aLong, FavoriteDto entity) {
         return null;
     }
 
     @Override
-    public Favorite create(Favorite newFavorite) {
-        if (favoriteLocalStorage.add(newFavorite)) {
-            try {
-                return getById(newFavorite.getFavoriteId());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
+    public FavoriteDto updatePart(Long aLong, FavoriteDto entity) throws Exception {
         return null;
-    }
-
-    @Override
-    public Favorite updateById(Long id, Favorite updateFavorite) {
-        for (int i = 0; i < favoriteLocalStorage.size(); i++) {
-            Favorite favorite = favoriteLocalStorage.get(i);
-            if (favorite.getFavoriteId().equals(id)) {
-                favoriteLocalStorage.set(i, updateFavorite);
-                System.out.println("Проведено обновление Id: " + id);
-                return favoriteLocalStorage.get(i);
-            }
-        }
-        System.out.println("При обновлении объект с Id " + id + " не был обнаружен, поэтому в базу внесен новый объект с таким Id");
-        return create(updateFavorite);
-    }
-
-    @Override //обновляю только поле Product
-    public Favorite updatePart(Long id, Favorite updatePart) throws Exception {
-        for (Favorite updatedPart : favoriteLocalStorage) {
-            if(updatedPart.getFavoriteId().equals(id)) {
-                if (!updatedPart.getProduct().equals(updatePart.getProduct()))
-                    updatedPart.setProduct(updatePart.getProduct());
-                return updatedPart;
-            }
-        }
-        throw new NoSuchElementException("При update не нашли объект с id = "+id);
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        try {
-            if (getById(id) == null) {
-                throw new IllegalArgumentException("Объекта с таким Id не существует");
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        for (int i = 0; i < favoriteLocalStorage.size(); i++) {//удаление реализовано без итератора
-            if (favoriteLocalStorage.get(i).getFavoriteId() == id) {
-                favoriteLocalStorage.remove(i);
-            }
-        }
     }
 }

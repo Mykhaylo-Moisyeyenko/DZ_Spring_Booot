@@ -1,86 +1,111 @@
 package de.telran.dzMoisyeyenko210125mbe.service;
 
-import de.telran.dzMoisyeyenko210125mbe.pojo.Role;
-import de.telran.dzMoisyeyenko210125mbe.pojo.User;
-import jakarta.annotation.PostConstruct;
 import de.telran.dzMoisyeyenko210125mbe.exception.BadRequestException;
-import org.springframework.stereotype.Component;
+import de.telran.dzMoisyeyenko210125mbe.model.dto.UserDto;
+import de.telran.dzMoisyeyenko210125mbe.model.entity.UserEntity;
+import de.telran.dzMoisyeyenko210125mbe.model.enums.Role;
+import de.telran.dzMoisyeyenko210125mbe.repository.UserRepository;
+import jakarta.annotation.PostConstruct;
+import lombok.*;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-@Component
-public class UserServiceList implements StorageServiceInterface<User, Long>{
+@RequiredArgsConstructor
+@Service
+public class UserServiceList implements StorageServiceInterface<UserDto, Long> {
 
-    private List<User> userLocalStorage = new ArrayList<>();
+    private final UserRepository userRepository;
 
     @PostConstruct
-    void init(){
-        User user1 = new User(1L, "Misha", "123@gmail.com", "3-44-22", "sdfs", Role.CLIENT);
-        userLocalStorage.add(user1);
+    void init() {
     }
 
     @Override
-    public List<User> getAll() {
-        return userLocalStorage;
-    }
-
-    @Override
-    public User getById(Long id) throws Exception {
-        for (User user : userLocalStorage) {
-            if (user.getUserId().equals(id))
-                return user;
+    public List<UserDto> getAll() {
+        List<UserEntity> usersEntity = userRepository.findAll();
+        List<UserDto> usersDto = new ArrayList<>();
+        for (UserEntity user : usersEntity) {
+            UserDto userDto = UserDto.builder()
+                    .userId(user.getUserId())
+                    .name(user.getName())
+                    .email(user.getEmail())
+                    .phoneNumber(user.getPhoneNumber())
+                    .role(user.getRole().name())
+                    .passwordHash("******")
+                    .build();
+            usersDto.add(userDto);
         }
-        throw new BadRequestException("Объект c Id= " + id + " не найден!!!");
+        return usersDto;
     }
 
     @Override
-    public User create(User newUser) {
-        if (userLocalStorage.add(newUser)) {
-            try {
-                return getById(newUser.getUserId());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+    public UserDto getById(Long id) throws Exception {
+        Optional<UserEntity> returnUserOptional = userRepository.findById(id);
+        UserEntity returnUserEntity = returnUserOptional.orElse(new UserEntity());
+
+        UserDto returnUserDto = UserDto.builder()
+                .userId(returnUserEntity.getUserId())
+                .name(returnUserEntity.getName())
+                .email(returnUserEntity.getEmail())
+                .phoneNumber(returnUserEntity.getPhoneNumber())
+                .passwordHash("*************")
+                .role(returnUserEntity.getRole().name())
+                .build();
+        return returnUserDto;
+    }
+
+    @Override
+    public UserDto create(UserDto newUserDto) {
+        if (newUserDto.getUserId() != null)
+            throw new IllegalArgumentException("Присвоение Id на данном этапе недопустимо");
+
+        UserEntity userEntity = UserEntity.builder()
+                .name(newUserDto.getName())
+                .phoneNumber(newUserDto.getPhoneNumber())
+                .email(newUserDto.getEmail())
+                .passwordHash(newUserDto.getPasswordHash())
+                .role(Role.valueOf(newUserDto.getRole()))
+                .build();
+
+        userEntity = userRepository.save(userEntity);
+
+        UserDto resultUserDto = UserDto.builder()
+                .userId(userEntity.getUserId())
+                .name(userEntity.getName())
+                .email(userEntity.getEmail())
+                .phoneNumber(userEntity.getPhoneNumber())
+                .role(userEntity.getRole().name())
+                .passwordHash("******")
+                .build();
+
+        return resultUserDto;
+    }
+
+    @Override
+    public void deleteById(Long id) throws Exception {
+        if (getById(id) == null) {
+            throw new BadRequestException("Объект c Id= " + id + " не найден!!!");
         }
+        userRepository.deleteById(id);
+    }
+
+
+
+
+    //Прочие методы пока реализованы как заглушки:
+
+    @Override
+    public UserDto updateById(Long aLong, UserDto entity) {
         return null;
     }
 
     @Override
-    public User updateById(Long id, User updateUser) {
-        for (int i = 0; i < userLocalStorage.size(); i++) {
-            User user = userLocalStorage.get(i);
-            if (user.getUserId().equals(id)) {
-                userLocalStorage.set(i, updateUser);
-                System.out.println("Проведено обновление Id: " + id);
-                return userLocalStorage.get(i);
-            }
-        }
-        System.out.println("При обновлении объект с Id " + id + " не был обнаружен, поэтому в базу внесен новый объект с таким Id");
-        return create(updateUser);
+    public UserDto updatePart(Long aLong, UserDto entity) throws Exception {
+        return null;
     }
 
-    @Override //обновляю только поле Name
-    public User updatePart(Long id, User updatePart) throws Exception {
-        for (User updatedPart : userLocalStorage) {
-            if(updatedPart.getUserId().equals(id)) {
-                if (!updatedPart.getName().equals(updatePart.getName()))
-                    updatedPart.setName(updatePart.getName());
-                return updatedPart;
-            }
-        }
-        throw new BadRequestException("Объект c Id= " + id + " не найден!!!");
-    }
 
-    @Override
-    public void deleteById(Long id) throws Exception{
-        if (getById(id) == null) {
-            throw new BadRequestException("Объект c Id= " + id + " не найден!!!");
-        }
-        for (int i = 0; i < userLocalStorage.size(); i++) {//удаление реализовано без итератора
-            if (userLocalStorage.get(i).getUserId() == id) {
-                userLocalStorage.remove(i);
-            }
-        }
-    }
 }

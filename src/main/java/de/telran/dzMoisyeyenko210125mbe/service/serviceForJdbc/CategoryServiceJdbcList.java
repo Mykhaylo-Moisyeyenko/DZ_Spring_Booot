@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@Primary //пока пометил этот сервис как Primary, только для целей ДЗ по JDBC
+//@Primary //пока пометил этот сервис как Primary, только для целей ДЗ по JDBC
 public class CategoryServiceJdbcList implements StorageServiceInterface<Category, Long> {
 
     @Autowired

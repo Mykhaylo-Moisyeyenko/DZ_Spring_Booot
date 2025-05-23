@@ -1,20 +1,29 @@
 package de.telran.dzMoisyeyenko210125mbe.service;
 
 import de.telran.dzMoisyeyenko210125mbe.exception.BadRequestException;
+import de.telran.dzMoisyeyenko210125mbe.model.entity.ProductEntity;
 import de.telran.dzMoisyeyenko210125mbe.pojo.Product;
+import de.telran.dzMoisyeyenko210125mbe.repository.ProductRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@Service
+@RequiredArgsConstructor
 public class ProductServiceList implements StorageServiceInterface<Product, Long> {
+
+
+    private final ProductRepository productRepository;
 
     private List<Product> localStorage = new ArrayList<>();
 
     @PostConstruct
     void init() {
+       //Ниже - инициализация продуктов для старых ДЗ:
         Product product1 = new Product();
         product1.setProductId(2L);
         product1.setName("Огурец");

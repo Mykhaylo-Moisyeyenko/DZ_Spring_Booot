@@ -4,6 +4,7 @@ import de.telran.dzMoisyeyenko210125mbe.exception.BadRequestException;
 import de.telran.dzMoisyeyenko210125mbe.pojo.Product;
 import de.telran.dzMoisyeyenko210125mbe.service.StorageServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import java.util.List;
 public class ProductController {
 
     @Autowired
+    @Qualifier("productServiceList")
     private StorageServiceInterface<Product, Long> storageServiceInterface;
 
     @GetMapping

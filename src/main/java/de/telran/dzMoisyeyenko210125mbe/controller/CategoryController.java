@@ -1,8 +1,11 @@
 package de.telran.dzMoisyeyenko210125mbe.controller;
 
 import de.telran.dzMoisyeyenko210125mbe.exception.BadRequestException;
+import de.telran.dzMoisyeyenko210125mbe.model.dto.CategoryDto;
 import de.telran.dzMoisyeyenko210125mbe.pojo.Category;
+import de.telran.dzMoisyeyenko210125mbe.repository.CategoryRepository;
 import de.telran.dzMoisyeyenko210125mbe.service.StorageServiceInterface;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -13,10 +16,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/category")
+@RequiredArgsConstructor
 public class CategoryController {
 
-    @Autowired
-    @Qualifier("categoryServiceJdbcList") // пока что пометил этим именем, для демонстрации работы JDBC
+    @Qualifier("categoryServiceList")
+    private final CategoryRepository categoryRepository;
+
+//    @Qualifier("categoryServiceJdbcList") // пока что пометил этим именем, для демонстрации работы JDBC
     private StorageServiceInterface<Category, Long> storageServiceInterface;
 
     @GetMapping
