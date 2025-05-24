@@ -85,6 +85,16 @@ public class OrderItemServiceList implements StorageServiceInterface<OrderItem, 
     }
 
     @Override
+    public OrderItem getByEmail(String valueEmail) {
+        return null;
+    }
+
+    @Override
+    public List<OrderItem> getByName(String valueName) {
+        return List.of();
+    }
+
+    @Override
     public void deleteById(Long id) {
         try {
             if (getById(id) == null) {

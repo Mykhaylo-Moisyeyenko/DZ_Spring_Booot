@@ -48,4 +48,14 @@ public class ProductServiceJdbcList implements StorageServiceInterface<Product, 
     public Product updatePart(Long aLong, Product entity) throws Exception {
         return null;
     }
+
+    @Override
+    public Product getByEmail(String valueEmail) {
+        return null;
+    }
+
+    @Override
+    public List<Product> getByName(String valueName) {
+        return List.of();
+    }
 }

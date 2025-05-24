@@ -16,13 +16,13 @@ public class UserController {
     private final StorageServiceInterface<UserDto, Long> storageServiceInterface;
 
     @GetMapping
-    public List<UserDto> getAll(){
+    public List<UserDto> getAll() {
         System.out.println("Привет, я GET-запрос контроллера - UserController для получения всех User");
         return storageServiceInterface.getAll();
     }
 
     @GetMapping("/{id}")
-    public UserDto getById(@PathVariable Long id) throws Exception{
+    public UserDto getById(@PathVariable Long id) throws Exception {
         System.out.println("Привет, я GET-запрос контроллера - ProductController для получения объекта по Id");
         try {
             return storageServiceInterface.getById(id);
@@ -33,7 +33,7 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto create(@RequestBody UserDto userDto){
+    public UserDto create(@RequestBody UserDto userDto) {
         System.out.println("Привет, я POST-запрос контроллера - UserController");
         System.out.println("В POST-запросе поступило: " + userDto);
         return storageServiceInterface.create(userDto);
@@ -46,10 +46,16 @@ public class UserController {
         storageServiceInterface.deleteById(id);
     }
 
+    @GetMapping("/email/{valueEmail}")
+    public UserDto getByEmail(@PathVariable String valueEmail) {
+        UserDto responseUser = storageServiceInterface.getByEmail(valueEmail);
+        return responseUser;
+    }
 
-
-
-
+    @GetMapping("/name/{valueName}")
+    public List<UserDto> getByName(@PathVariable String valueName) {
+        return storageServiceInterface.getByName(valueName);
+    }
 
 
     //Ниже - реализации методов CRUD под старые ДЗ:

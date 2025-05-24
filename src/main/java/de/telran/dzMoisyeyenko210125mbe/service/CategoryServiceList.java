@@ -6,7 +6,6 @@ import de.telran.dzMoisyeyenko210125mbe.model.entity.CategoryEntity;
 import de.telran.dzMoisyeyenko210125mbe.pojo.Category;
 import de.telran.dzMoisyeyenko210125mbe.repository.CategoryRepository;
 import jakarta.annotation.PostConstruct;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,10 +23,11 @@ public class CategoryServiceList implements StorageServiceInterface<Category, Lo
 
     @PostConstruct
     void init(){
+        //инициализация всех бинов - вынесена в класс DataInitializer
+
         //Ниже - инициализация продуктов для старых ДЗ:
         Category category1 = new Category(1L, "Фрукты");
         Category category2 = new Category(2L, "Овощи");
-
         categoryLocalStorage.add(category1);
         categoryLocalStorage.add(category2);
     }
@@ -82,6 +82,16 @@ public class CategoryServiceList implements StorageServiceInterface<Category, Lo
             }
         }
         throw new BadRequestException("Объект c Id= " + id + " не найден!!!");
+    }
+
+    @Override
+    public Category getByEmail(String valueEmail) {
+        return null;
+    }
+
+    @Override
+    public List<Category> getByName(String valueName) {
+        return List.of();
     }
 
     @Override

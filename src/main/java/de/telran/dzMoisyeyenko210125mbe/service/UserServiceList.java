@@ -5,13 +5,13 @@ import de.telran.dzMoisyeyenko210125mbe.model.dto.UserDto;
 import de.telran.dzMoisyeyenko210125mbe.model.entity.UserEntity;
 import de.telran.dzMoisyeyenko210125mbe.model.enums.Role;
 import de.telran.dzMoisyeyenko210125mbe.repository.UserRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -19,9 +19,7 @@ public class UserServiceList implements StorageServiceInterface<UserDto, Long> {
 
     private final UserRepository userRepository;
 
-    @PostConstruct
-    void init() {
-    }
+    //инициализация бинов - вынесена в класс DataInitializer
 
     @Override
     public List<UserDto> getAll() {
@@ -92,7 +90,39 @@ public class UserServiceList implements StorageServiceInterface<UserDto, Long> {
         userRepository.deleteById(id);
     }
 
+    public UserDto getByEmail(String valueEmail) {
 
+        UserEntity returnUserEntity = userRepository.findByEmail(valueEmail);
+
+        UserDto resultUserDto = UserDto.builder()
+                .userId(returnUserEntity.getUserId())
+                .name(returnUserEntity.getName())
+                .email(returnUserEntity.getEmail())
+                .phoneNumber(returnUserEntity.getPhoneNumber())
+                .role(returnUserEntity.getRole().name())
+                .passwordHash("******")
+                .build();
+        return resultUserDto;
+    }
+
+    public List<UserDto> getByName(String valueName) {
+        List<UserEntity> returnUsersEntity = userRepository.findByName(valueName);
+
+        List<UserDto> returnUsersDto =
+                returnUsersEntity.stream()
+                        .map(userEntity ->
+                                UserDto.builder()
+                                        .userId(userEntity.getUserId())
+                                        .name(userEntity.getName())
+                                        .email(userEntity.getEmail())
+                                        .phoneNumber(userEntity.getPhoneNumber())
+                                        .role(userEntity.getRole().name())
+                                        .passwordHash("**************")
+                                        .build())
+                        .collect(Collectors.toList());
+
+        return returnUsersDto;
+    }
 
 
     //Прочие методы пока реализованы как заглушки:

@@ -15,4 +15,8 @@ public interface StorageServiceInterface<T, ID> {
     void deleteById (ID id) throws Exception;
 
     T updatePart(ID id, T entity) throws Exception;
+
+    T getByEmail(String valueEmail);
+
+    List<T> getByName(String valueName);
 }

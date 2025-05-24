@@ -90,4 +90,14 @@ public class CartServiceList implements StorageServiceInterface<Cart, Long> {
         }
         throw new NoSuchElementException("При update не нашли объект с id = "+id);
     }
+
+    @Override
+    public Cart getByEmail(String valueEmail) {
+        return null;
+    }
+
+    @Override
+    public List<Cart> getByName(String valueName) {
+        return List.of();
+    }
 }

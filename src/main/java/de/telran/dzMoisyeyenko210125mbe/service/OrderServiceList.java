@@ -79,6 +79,16 @@ public class OrderServiceList implements StorageServiceInterface<Order, Long> {
     }
 
     @Override
+    public Order getByEmail(String valueEmail) {
+        return null;
+    }
+
+    @Override
+    public List<Order> getByName(String valueName) {
+        return List.of();
+    }
+
+    @Override
     public void deleteById(Long id) throws Exception {
         if (getById(id) == null) {
             throw new BadRequestException("Объект c Id= " + id + " не найден!!!");

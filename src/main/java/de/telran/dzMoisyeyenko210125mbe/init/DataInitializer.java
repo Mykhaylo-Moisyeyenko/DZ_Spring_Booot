@@ -30,22 +30,33 @@ public class DataInitializer {
         categoryEntity1 = categoryRepository.save(categoryEntity1);
 
         ProductEntity productEntity1 = ProductEntity.builder()
-                .name("Pillow natural")
+                .name("pillow")
                 .imageUrl("URL")
                 .price(15.88)
                 .discountPrice(11.00)
-                .description("quality pillow with white zip")
+                .description("white pillow 10*10")
+                .category(categoryEntity1)
                 .build();
         productEntity1 = productRepository.save(productEntity1);
 
         ProductEntity productEntity2 = ProductEntity.builder()
-                .name("Pillow black")
+                .name("pillow2")
                 .imageUrl("URL111")
                 .price(16.45)
                 .discountPrice(14.00)
-                .description("quality pillow with black zip")
+                .description("quality pillow with black cover")
+                .category(categoryEntity1)
                 .build();
         productEntity2 = productRepository.save(productEntity2);
+
+        ProductEntity productEntity3 = ProductEntity.builder()
+                .name("pillow3")
+                .imageUrl("URL333")
+                .price(19.12)
+                .description("quality pillow with yellow cover")
+                .category(categoryEntity1)
+                .build();
+        productEntity3 = productRepository.save(productEntity3);
 
         UserEntity userEntity1 = UserEntity.builder()
                 .name("Misha")
@@ -64,6 +75,15 @@ public class DataInitializer {
                 .passwordHash("9988777")
                 .build();
         userEntity2 = userRepository.save(userEntity2);
+
+        UserEntity userEntity3 = UserEntity.builder()
+                .name("Tim")
+                .email("ddddddddddd@gmail.com")
+                .phoneNumber("7777777777")
+                .role(Role.CLIENT)
+                .passwordHash("46+*8468--5")
+                .build();
+        userEntity3 = userRepository.save(userEntity3);
 
         FavoriteEntity favoriteEntity1 = FavoriteEntity.builder()
                 .user(userEntity1)

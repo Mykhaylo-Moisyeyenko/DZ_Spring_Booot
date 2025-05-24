@@ -47,4 +47,14 @@ public class CategoryServiceJdbcList implements StorageServiceInterface<Category
     public Category updatePart(Long aLong, Category entity) throws Exception {
         return null;
     }
+
+    @Override
+    public Category getByEmail(String valueEmail) {
+        return null;
+    }
+
+    @Override
+    public List<Category> getByName(String valueName) {
+        return List.of();
+    }
 }

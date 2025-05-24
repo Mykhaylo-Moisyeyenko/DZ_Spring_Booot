@@ -19,7 +19,7 @@ public class FavoriteServiceList implements StorageServiceInterface<FavoriteDto,
 
     private final FavoriteRepository favoriteRepository;
 
-    //инициализация бина Favorite значениями - вынесена в класс DataInitializer
+    //инициализация бинов - вынесена в класс DataInitializer
 
     @Override
     public List<FavoriteDto> getAll() {
@@ -96,5 +96,15 @@ public class FavoriteServiceList implements StorageServiceInterface<FavoriteDto,
     @Override
     public FavoriteDto updatePart(Long aLong, FavoriteDto entity) throws Exception {
         return null;
+    }
+
+    @Override
+    public FavoriteDto getByEmail(String valueEmail) {
+        return null;
+    }
+
+    @Override
+    public List<FavoriteDto> getByName(String valueName) {
+        return List.of();
     }
 }
