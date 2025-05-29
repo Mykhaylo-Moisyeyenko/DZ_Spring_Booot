@@ -5,6 +5,7 @@ import de.telran.dzMoisyeyenko210125mbe.model.dto.ProductDto;
 import de.telran.dzMoisyeyenko210125mbe.pojo.Product;
 import de.telran.dzMoisyeyenko210125mbe.service.ProductServiceList;
 import de.telran.dzMoisyeyenko210125mbe.service.StorageServiceInterface;
+import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,40 @@ public class ProductController {
     public List<ProductDto> getByDiscount() {
         return productServiceList.findByDiscount();
     }
+
+    //1. Напишите методы в Репозитории для редактирования цены товара и дисконта в таблице Product c использованием @Query.
+    @PatchMapping("/changeprices/{id}")//Запрос: localhost:8088/api/product/changeprices/1?newPrice=15.00&newDiscountPrice=12.00
+    public ProductDto updatePriceAndDiscountOfProduct(@PathVariable Long id, @RequestParam(name = "newPrice") Double newPrice, @RequestParam(name = "newDiscountPrice") Double newDiscountPrice){
+        return productServiceList.updatePriceAndDiscountOfProduct(id, newPrice, newDiscountPrice);
+    }
+
+    //    1) * напишите метод, позволяющий найти продукты, в описании которых (Description)
+    //    есть слово "Распродажа" и цена которых более 100 евро.
+    @GetMapping("/getBySaleAndPrice") //запрос: localhost:8088/api/product/getBySaleAndPrice?description=Распродажа&price=10
+    public List<ProductDto> getByDescriptionContainingAndPriceGreaterThan(@RequestParam String description, @RequestParam Double price){
+        return productServiceList.getByDescriptionContainingAndPriceGreaterThan(description, price);
+    }
+
+    //    2) ** напишите метод, позволяющий найти продукты, категорию которых мы можем задать через
+//    первый аргумент метода и которые имеют дисконтную цену (DiscountPrice > 0).
+    @GetMapping("/getByCategoryAndDiscountPrice") //запрос: localhost:8088/api/product/getByCategoryAndDiscountPrice?categoryName=Pillows&discountPrice=0
+    public List<ProductDto> getByCategoryNameAndDiscountPriceGreaterThan(@RequestParam String categoryName, @RequestParam Double discountPrice){
+        return productServiceList.getByCategoryNameAndDiscountPriceGreaterThan(categoryName, discountPrice);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

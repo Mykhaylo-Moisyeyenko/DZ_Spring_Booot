@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,7 +21,7 @@ public class ProductServiceList implements StorageServiceInterface<ProductDto, L
 
     private List<Product> localStorage = new ArrayList<>();
 
-        //инициализация бинов - вынесена в класс DataInitializer
+    //инициализация бинов - вынесена в класс DataInitializer
 
     @Override
     public List<ProductDto> getByName(String valueName) {
@@ -61,6 +63,65 @@ public class ProductServiceList implements StorageServiceInterface<ProductDto, L
                         .build()
                 ).collect(Collectors.toList());
     }
+
+    //1. Напишите методы в Репозитории для редактирования цены товара и дисконта в таблице Product c использованием @Query.
+    public ProductDto updatePriceAndDiscountOfProduct(Long id, Double newPrice, Double newDiscountPrice) {
+        int changedRows = productRepository.setPriceAndDiscountOfProduct(id, newPrice, newDiscountPrice);
+        if (changedRows == 0) throw new IllegalStateException("Обновление не было выполнено!");
+        ProductEntity productEntity = productRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Продукта с таким Id не существует"));
+        return ProductDto.builder()
+                .productId(productEntity.getProductId())
+                .name(productEntity.getName())
+                .imageUrl(productEntity.getImageUrl())
+                .price(productEntity.getPrice())
+                .discountPrice(productEntity.getDiscountPrice())
+                .description(productEntity.getDescription())
+                .categoryId(productEntity.getCategory().getName())
+                .createdAt(productEntity.getCreatedAt())
+                .updatedAt(productEntity.getUpdatedAt())
+                .build();
+    }
+
+    //    1) * напишите метод, позволяющий найти продукты, в описании которых (Description)
+//    есть слово "Распродажа" и цена которых более 100 евро.
+    public List<ProductDto> getByDescriptionContainingAndPriceGreaterThan(String description, Double price){
+        List<ProductEntity> productEntities = productRepository.findByDescriptionContainingAndPriceGreaterThan(description, price);
+         return productEntities.stream()
+                .map(productEntity -> ProductDto.builder()
+                        .productId(productEntity.getProductId())
+                        .name(productEntity.getName())
+                        .imageUrl(productEntity.getImageUrl())
+                        .price(productEntity.getPrice())
+                        .discountPrice(productEntity.getDiscountPrice())
+                        .description(productEntity.getDescription())
+                        .categoryId(productEntity.getCategory().getName())
+                        .createdAt(productEntity.getCreatedAt())
+                        .updatedAt(productEntity.getUpdatedAt())
+                        .build()
+                ).collect(Collectors.toList());
+    }
+
+    //    2) ** напишите метод, позволяющий найти продукты, категорию которых мы можем задать через
+//    первый аргумент метода и которые имеют дисконтную цену (DiscountPrice > 0).
+    public List<ProductDto> getByCategoryNameAndDiscountPriceGreaterThan(String categoryName, Double discountPrice) {
+        List<ProductEntity> productEntities = productRepository.findByCategoryNameAndDiscountPriceGreaterThan(categoryName, discountPrice);
+        return productEntities.stream()
+                .map(productEntity -> ProductDto.builder()
+                        .productId(productEntity.getProductId())
+                        .name(productEntity.getName())
+                        .imageUrl(productEntity.getImageUrl())
+                        .price(productEntity.getPrice())
+                        .discountPrice(productEntity.getDiscountPrice())
+                        .description(productEntity.getDescription())
+                        .categoryId(productEntity.getCategory().getName())
+                        .createdAt(productEntity.getCreatedAt())
+                        .updatedAt(productEntity.getUpdatedAt())
+                        .build()
+                ).collect(Collectors.toList());
+    }
+
+
 
 
 
@@ -105,6 +166,7 @@ public class ProductServiceList implements StorageServiceInterface<ProductDto, L
     public ProductDto getByEmail(String valueEmail) {
         return null;
     }
+
 
     //ниже - методы для ДЗ до 23.05.2025 (без использования Dto):
 //    @Override

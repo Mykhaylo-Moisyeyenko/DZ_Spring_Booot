@@ -34,7 +34,7 @@ public class DataInitializer {
                 .imageUrl("URL")
                 .price(15.88)
                 .discountPrice(11.00)
-                .description("white pillow 10*10")
+                .description("white pillow 10*10, Распродажа")
                 .category(categoryEntity1)
                 .build();
         productEntity1 = productRepository.save(productEntity1);
@@ -52,8 +52,8 @@ public class DataInitializer {
         ProductEntity productEntity3 = ProductEntity.builder()
                 .name("pillow3")
                 .imageUrl("URL333")
-                .price(19.12)
-                .description("quality pillow with yellow cover")
+                .price(190.12)
+                .description("Распродажа, quality pillow with yellow cover")
                 .category(categoryEntity1)
                 .build();
         productEntity3 = productRepository.save(productEntity3);
