@@ -55,21 +55,6 @@ public class ProductController {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // ниже - методы для запросов для ДЗ до 23.05.2025:
     @GetMapping
     public List<ProductDto> getAll() {

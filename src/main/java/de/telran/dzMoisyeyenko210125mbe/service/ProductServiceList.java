@@ -1,9 +1,11 @@
 package de.telran.dzMoisyeyenko210125mbe.service;
 
+import de.telran.dzMoisyeyenko210125mbe.mapper.Mappers;
 import de.telran.dzMoisyeyenko210125mbe.model.dto.ProductDto;
 import de.telran.dzMoisyeyenko210125mbe.model.entity.ProductEntity;
 import de.telran.dzMoisyeyenko210125mbe.pojo.Product;
 import de.telran.dzMoisyeyenko210125mbe.repository.ProductRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +20,48 @@ import java.util.stream.Collectors;
 public class ProductServiceList implements StorageServiceInterface<ProductDto, Long> {
 
     private final ProductRepository productRepository;
+    private final Mappers mappers;
 
-    private List<Product> localStorage = new ArrayList<>();
+    private List<Product> localStorage = new ArrayList<>();//старый репозиторий, до подключения productRepository
 
-    //инициализация бинов - вынесена в класс DataInitializer
+    //инициализация бинов - была вынесена в класс DataInitializer
+
+    @Override
+    public ProductDto getById(Long id) throws Exception {
+        Optional<ProductEntity> returnProductOptional = productRepository.findById(id);
+        ProductEntity returnProductEntity = returnProductOptional.
+                orElseThrow(()->new EntityNotFoundException("Product with ID " + id + " not found."));
+        return mappers.convertProductEntityToProductDto(returnProductEntity);
+    }
+
+    @Override
+    public List<ProductDto> getAll() {
+        List<ProductEntity> productEntities = productRepository.findAll();
+        List<ProductDto> productDtos = new ArrayList<>();
+        for (ProductEntity productEntity: productEntities){
+            productDtos.add(mappers.convertProductEntityToProductDto(productEntity));
+        }
+        return productDtos;
+    }
+
+    @Override
+    public ProductDto create(ProductDto newProductDto){
+        if (newProductDto.getProductId() !=null){
+            throw new IllegalArgumentException("Присвоение Id на данном этапе недопустимо");
+        }
+        ProductEntity productEntity = mappers.convertProductDtoToProductEntity(newProductDto);
+        productEntity = productRepository.save(productEntity);
+
+        ProductDto productDto = mappers.convertProductEntityToProductDto(productEntity);
+        return productDto;
+    }
+
+
+
+
+
+
+
 
     @Override
     public List<ProductDto> getByName(String valueName) {
@@ -131,21 +171,6 @@ public class ProductServiceList implements StorageServiceInterface<ProductDto, L
 
 
     //Ниже - методы-заглушки, пока не реализованные:
-
-    @Override
-    public List<ProductDto> getAll() {
-        return List.of();
-    }
-
-    @Override
-    public ProductDto getById(Long aLong) throws Exception {
-        return null;
-    }
-
-    @Override
-    public ProductDto create(ProductDto entity) {
-        return null;
-    }
 
     @Override
     public ProductDto updateById(Long aLong, ProductDto entity) {
