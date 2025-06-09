@@ -20,10 +20,10 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 
     //1. Напишите методы в Репозитории для редактирования цены товара и дисконта
     //в таблице Product c использованием @Query.
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Transactional
-    @Query(value = "update ProductEntity p set p.price=:newPrice,p.discountPrice=:newDiscountPrice where p.productId=:id")
-    int setPriceAndDiscountOfProduct(Long id, Double newPrice, Double newDiscountPrice);
+    @Query(value = "update ProductEntity p set p.price=:newPrice,p.discountPrice=:newDiscountPrice where p.productId=:productId")
+    int setPriceAndDiscountOfProduct(Long productId, Double newPrice, Double newDiscountPrice);
 
 //    Используя механизм "Spring Data JPA: запросы, генерируемые по имени метода":
 //    1) * напишите метод, позволяющий найти продукты, в описании которых (Description)
